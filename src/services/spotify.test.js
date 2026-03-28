@@ -86,3 +86,38 @@ describe('searchTrack', () => {
     vi.restoreAllMocks();
   });
 });
+
+describe('createPlaylist', () => {
+  it('fetches current user then creates playlist, returns playlist ID', async () => {
+    vi.spyOn(global, 'fetch')
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'user123' }) }) // /me
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'playlist456' }) }); // create
+
+    const id = await createPlaylist('My Playlist', 'tok');
+    expect(id).toBe('playlist456');
+    vi.restoreAllMocks();
+  });
+
+  it('throws when /me request fails', async () => {
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce({ ok: false, status: 401 });
+    await expect(createPlaylist('My Playlist', 'tok')).rejects.toThrow('Could not fetch Spotify user');
+    vi.restoreAllMocks();
+  });
+});
+
+describe('addTracksToPlaylist', () => {
+  it('posts tracks to playlist endpoint', async () => {
+    const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+    await addTracksToPlaylist('pl123', ['spotify:track:a', 'spotify:track:b'], 'tok');
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    vi.restoreAllMocks();
+  });
+
+  it('batches more than 100 URIs into multiple requests', async () => {
+    const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue({ ok: true, json: async () => ({}) });
+    const uris = Array.from({ length: 150 }, (_, i) => `spotify:track:${i}`);
+    await addTracksToPlaylist('pl123', uris, 'tok');
+    expect(fetchSpy).toHaveBeenCalledTimes(2); // 100 + 50
+    vi.restoreAllMocks();
+  });
+});

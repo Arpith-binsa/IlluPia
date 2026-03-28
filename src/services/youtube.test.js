@@ -73,4 +73,10 @@ describe('getPlaylistTracks', () => {
     ]);
     vi.restoreAllMocks();
   });
+
+  it('throws ratelimit error on 429', async () => {
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce({ ok: false, status: 429 });
+    await expect(getPlaylistTracks('PLabc')).rejects.toMatchObject({ code: 'ratelimit' });
+    vi.restoreAllMocks();
+  });
 });
