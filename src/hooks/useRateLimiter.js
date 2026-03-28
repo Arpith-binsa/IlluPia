@@ -31,7 +31,12 @@ function recordAttempt(key, timestamps) {
  */
 export function useRateLimiter() {
   const check = useCallback((type, qualifier = '') => {
-    const { max, windowMs } = LIMITS[type];
+    const config = LIMITS[type];
+    if (!config) {
+      console.error(`[useRateLimiter] Unknown rate limit type: "${type}"`);
+      return { allowed: false, retryAfterMs: 0 };
+    }
+    const { max, windowMs } = config;
     const key = `pb_rl_${type}_${qualifier}`;
     const timestamps = getTimestamps(key, windowMs);
 

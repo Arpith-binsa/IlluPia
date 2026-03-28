@@ -12,10 +12,11 @@ function randomBase64url(byteLength) {
 
 /**
  * Generate PKCE code_verifier.
- * 128 random bytes → base64url (~171 chars). Stored in sessionStorage.
+ * 96 random bytes → base64url (128 chars). Stored in sessionStorage.
+ * RFC 7636 §4.1 requires max 128 chars.
  */
 export function generateVerifier() {
-  return randomBase64url(128);
+  return randomBase64url(96);
 }
 
 /**

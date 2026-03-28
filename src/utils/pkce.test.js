@@ -17,6 +17,10 @@ describe('generateVerifier', () => {
   it('generates a different value each call', () => {
     expect(generateVerifier()).not.toBe(generateVerifier());
   });
+
+  it('returns at most 128 characters (RFC 7636 §4.1 maximum)', () => {
+    expect(generateVerifier().length).toBeLessThanOrEqual(128);
+  });
 });
 
 describe('generateChallenge', () => {

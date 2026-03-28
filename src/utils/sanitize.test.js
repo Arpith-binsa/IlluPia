@@ -54,6 +54,9 @@ describe('validatePlaylistUrl', () => {
   it('rejects empty string', () => {
     expect(validatePlaylistUrl('')).toBeNull();
   });
+  it('rejects non-standard port', () => {
+    expect(validatePlaylistUrl('https://open.spotify.com:8080/playlist/abc')).toBeNull();
+  });
 });
 
 describe('pickFields', () => {

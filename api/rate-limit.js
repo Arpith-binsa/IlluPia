@@ -5,6 +5,8 @@
 
 /** ip → [timestamp, timestamp, ...] */
 const store = new Map();
+// NOTE: If x-forwarded-for is absent, all anonymous requests share the 'unknown' bucket.
+// This is a known limitation of in-memory rate limiting without a request ID.
 
 const WINDOW_MS = 60_000; // 1 minute sliding window
 const MAX_REQUESTS = 10;  // per IP per window
@@ -17,8 +19,11 @@ const MAX_REQUESTS = 10;  // per IP per window
  */
 export function checkRateLimit(ip) {
   const now = Date.now();
-  // Prune timestamps outside the current window
   const timestamps = (store.get(ip) || []).filter(ts => now - ts < WINDOW_MS);
+
+  if (timestamps.length === 0) {
+    store.delete(ip);  // prune stale entry to prevent unbounded Map growth
+  }
 
   if (timestamps.length >= MAX_REQUESTS) {
     const retryAfter = Math.ceil((WINDOW_MS - (now - timestamps[0])) / 1000);

@@ -35,6 +35,7 @@ export function validatePlaylistUrl(raw) {
   try {
     const parsed = new URL(cleaned);
     if (parsed.protocol !== 'https:') return null;
+    if (parsed.port !== '') return null;   // reject non-standard ports
     if (!URL_ALLOWLIST.includes(parsed.hostname)) return null;
     return parsed.href;
   } catch {

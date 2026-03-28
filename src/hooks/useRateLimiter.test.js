@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useRateLimiter } from './useRateLimiter';
 
@@ -6,6 +6,8 @@ beforeEach(() => {
   localStorage.clear();
   vi.useFakeTimers();
 });
+
+afterEach(() => vi.useRealTimers());
 
 describe('useRateLimiter — auth (5 per 60s)', () => {
   it('allows first 5 auth attempts', () => {
@@ -71,4 +73,10 @@ describe('useRateLimiter — conversion (3 per 5min)', () => {
     const { allowed } = result.current.check('conversion');
     expect(allowed).toBe(true);
   });
+});
+
+it('returns not-allowed for unknown type without throwing', () => {
+  const { result } = renderHook(() => useRateLimiter());
+  const { allowed } = result.current.check('unknown_type');
+  expect(allowed).toBe(false);
 });
