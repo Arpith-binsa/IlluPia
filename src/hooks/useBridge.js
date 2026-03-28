@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { validatePlaylistUrl } from '../utils/sanitize';
 import * as spotify from '../services/spotify';
 import * as youtube from '../services/youtube';
@@ -105,5 +105,8 @@ export function useBridge({ spotifyToken, googleToken, onRateLimit }) {
     setResults(null);
   }, []);
 
-  return { status, results, convertPia, convertIllu, reset };
+  return useMemo(
+    () => ({ status, results, convertPia, convertIllu, reset }),
+    [status, results, convertPia, convertIllu, reset]
+  );
 }

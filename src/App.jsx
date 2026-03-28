@@ -56,7 +56,11 @@ export default function App() {
 
   // Show results screen after a successful conversion
   if (bridge.results) {
-    return <ResultsView results={bridge.results} onAgain={bridge.reset} t={t} />;
+    function handleAgain() {
+      bridge.reset();
+      setActiveDirection(null);
+    }
+    return <ResultsView results={bridge.results} onAgain={handleAgain} t={t} />;
   }
 
   return (
