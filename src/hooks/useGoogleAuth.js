@@ -30,35 +30,6 @@ export function useGoogleAuth() {
   const [token, setToken] = useState(null);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    // 1. Restore from localStorage first (this is the persistence fix)
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (parsed.expires_at > Date.now()) {
-          setToken(parsed);
-          return;
-        }
-      } catch { /* malformed */ }
-      localStorage.removeItem(STORAGE_KEY);
-    }
-
-    // 2. Handle OAuth callback — CSRF check via state param
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
-    const returnedState = params.get('state');
-    const storedState = sessionStorage.getItem(STATE_KEY);
-
-    if (code && returnedState && returnedState === storedState) {
-      const verifier = sessionStorage.getItem(VERIFIER_KEY);
-      sessionStorage.removeItem(VERIFIER_KEY);
-      sessionStorage.removeItem(STATE_KEY);
-      exchangeCode(code, verifier);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const exchangeCode = useCallback(async (code, verifier) => {
     try {
       const res = await fetch('https://oauth2.googleapis.com/token', {
@@ -96,6 +67,35 @@ export function useGoogleAuth() {
       localStorage.removeItem(STORAGE_KEY);
       history.replaceState({}, '', '/');
     }
+  }, []);
+
+  useEffect(() => {
+    // 1. Restore from localStorage first (this is the persistence fix)
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed.expires_at > Date.now()) {
+          setToken(parsed);
+          return;
+        }
+      } catch { /* malformed */ }
+      localStorage.removeItem(STORAGE_KEY);
+    }
+
+    // 2. Handle OAuth callback — CSRF check via state param
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const returnedState = params.get('state');
+    const storedState = sessionStorage.getItem(STATE_KEY);
+
+    if (code && returnedState && returnedState === storedState) {
+      const verifier = sessionStorage.getItem(VERIFIER_KEY);
+      sessionStorage.removeItem(VERIFIER_KEY);
+      sessionStorage.removeItem(STATE_KEY);
+      exchangeCode(code, verifier);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const connect = useCallback(async () => {

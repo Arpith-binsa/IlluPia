@@ -62,6 +62,34 @@ describe('getPlaylistTracks', () => {
     await expect(getPlaylistTracks('pl', 'tok')).rejects.toThrow('Spotify API error: 401');
     vi.restoreAllMocks();
   });
+
+  it('paginates when next cursor is present', async () => {
+    vi.spyOn(global, 'fetch')
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          next: 'https://api.spotify.com/v1/playlists/pl/tracks?offset=50',
+          items: [
+            { track: { name: 'Track 1', artists: [{ name: 'Artist 1' }] } },
+            { track: { name: 'Track 2', artists: [{ name: 'Artist 2' }] } },
+          ],
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          next: null,
+          items: [
+            { track: { name: 'Track 3', artists: [{ name: 'Artist 3' }] } },
+          ],
+        }),
+      });
+
+    const tracks = await getPlaylistTracks('pl', 'tok');
+    expect(tracks).toHaveLength(3);
+    expect(tracks[2].title).toBe('Track 3');
+    vi.restoreAllMocks();
+  });
 });
 
 describe('searchTrack', () => {

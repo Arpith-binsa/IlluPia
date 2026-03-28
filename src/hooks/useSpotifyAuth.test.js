@@ -79,6 +79,22 @@ describe('useSpotifyAuth — OAuth callback', () => {
     // No fetch should happen, no token set
     expect(result.current.connected).toBe(false);
   });
+
+  it('sets autherror when token exchange fails', async () => {
+    window.history.replaceState({}, '', '/?code=bad-code&state=test-state');
+    sessionStorage.setItem('pb_spotify_state', 'test-state');
+    sessionStorage.setItem('pb_spotify_verifier', 'test-verifier');
+
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ error: 'invalid_grant' }),
+    });
+
+    const { result } = renderHook(() => useSpotifyAuth());
+    await waitFor(() => expect(result.current.error).toBe('autherror'));
+    expect(result.current.connected).toBe(false);
+    vi.restoreAllMocks();
+  });
 });
 
 describe('useSpotifyAuth — disconnect', () => {

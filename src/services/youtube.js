@@ -16,19 +16,31 @@ export function extractPlaylistId(url) {
  * (YouTube playlist items don't include artist — title only)
  */
 export async function getPlaylistTracks(playlistId) {
-  const res = await fetch(
-    `${PROXY}?action=playlist&playlistId=${encodeURIComponent(playlistId)}`
-  );
-  if (res.status === 429) {
-    throw Object.assign(new Error('Rate limit exceeded'), { code: 'ratelimit' });
-  }
-  if (!res.ok) throw new Error(`YouTube proxy error: ${res.status}`);
+  const items = [];
+  let pageToken = '';
 
-  const data = await res.json();
-  return (data.items ?? []).map(item => ({
-    title: item.snippet?.title ?? '',
-    artist: '', // YouTube playlist items don't include artist metadata
-  }));
+  do {
+    const url =
+      `${PROXY}?action=playlist&playlistId=${encodeURIComponent(playlistId)}` +
+      (pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : '');
+
+    const res = await fetch(url);
+    if (res.status === 429) {
+      throw Object.assign(new Error('Rate limit exceeded'), { code: 'ratelimit' });
+    }
+    if (!res.ok) throw new Error(`YouTube proxy error: ${res.status}`);
+
+    const data = await res.json();
+    for (const item of data.items ?? []) {
+      items.push({
+        title: item.snippet?.title ?? '',
+        artist: '',
+      });
+    }
+    pageToken = data.nextPageToken ?? '';
+  } while (pageToken);
+
+  return items;
 }
 
 /**
@@ -79,8 +91,9 @@ export async function createPlaylist(name, token) {
  * Adds one at a time — YouTube's batch insert is not available in v3.
  */
 export async function addVideosToPlaylist(playlistId, videoIds, token) {
+  const failed = [];
   for (const videoId of videoIds) {
-    await fetch('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet', {
+    const res = await fetch('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -93,6 +106,8 @@ export async function addVideosToPlaylist(playlistId, videoIds, token) {
         },
       }),
     });
-    // Continue on error — missing one video shouldn't abort the whole playlist
+    // Collect failures — a single missing video shouldn't abort the whole playlist
+    if (!res.ok) failed.push(videoId);
   }
+  return { failedCount: failed.length };
 }

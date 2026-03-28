@@ -59,12 +59,13 @@ export default async function handler(req) {
         `${YT_SEARCH_URL}?part=snippet&type=video&maxResults=1` +
         `&q=${encodeURIComponent(q)}&key=${apiKey}`;
     } else {
-      // Proxy a YouTube playlist items fetch
       const playlistId = sanitizeParam(searchParams.get('playlistId'));
       if (!playlistId) return json({ error: 'Missing parameter "playlistId".' }, 400);
+      const pageToken = sanitizeParam(searchParams.get('pageToken') || '');
       upstreamUrl =
         `${YT_PLAYLIST_URL}?part=snippet&maxResults=50` +
-        `&playlistId=${encodeURIComponent(playlistId)}&key=${apiKey}`;
+        `&playlistId=${encodeURIComponent(playlistId)}&key=${apiKey}` +
+        (pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : '');
     }
 
     const upstreamRes = await fetch(upstreamUrl);

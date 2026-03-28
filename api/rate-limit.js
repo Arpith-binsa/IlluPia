@@ -21,8 +21,11 @@ export function checkRateLimit(ip) {
   const now = Date.now();
   const timestamps = (store.get(ip) || []).filter(ts => now - ts < WINDOW_MS);
 
+  // Note: when all previous timestamps have expired, we clear and immediately
+  // reset the entry on the next store.set below. The delete here avoids leaving
+  // an empty array permanently if this IP never makes another request.
   if (timestamps.length === 0) {
-    store.delete(ip);  // prune stale entry to prevent unbounded Map growth
+    store.delete(ip);
   }
 
   if (timestamps.length >= MAX_REQUESTS) {

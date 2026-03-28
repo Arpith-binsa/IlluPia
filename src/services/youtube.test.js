@@ -79,4 +79,29 @@ describe('getPlaylistTracks', () => {
     await expect(getPlaylistTracks('PLabc')).rejects.toMatchObject({ code: 'ratelimit' });
     vi.restoreAllMocks();
   });
+
+  it('paginates when nextPageToken is present', async () => {
+    vi.spyOn(global, 'fetch')
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          items: [{ snippet: { title: 'Track 1' } }],
+          nextPageToken: 'page2token',
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          items: [{ snippet: { title: 'Track 2' } }],
+        }),
+      });
+
+    const tracks = await getPlaylistTracks('PLabc');
+    expect(tracks).toHaveLength(2);
+    expect(tracks[0].title).toBe('Track 1');
+    expect(tracks[1].title).toBe('Track 2');
+    vi.restoreAllMocks();
+  });
 });

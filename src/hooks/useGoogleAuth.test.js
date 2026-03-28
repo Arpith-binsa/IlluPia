@@ -40,6 +40,11 @@ describe('useGoogleAuth — initial state', () => {
   });
 });
 
+function makeFakeIdToken(aud) {
+  const payload = btoa(JSON.stringify({ aud })).replace(/=/g, '');
+  return `header.${payload}.signature`;
+}
+
 describe('useGoogleAuth — OAuth callback (persistence fix)', () => {
   it('stores token in localStorage BEFORE cleaning URL', async () => {
     window.history.replaceState({}, '', '/?code=g-code&state=g-state');
@@ -85,6 +90,49 @@ describe('useGoogleAuth — OAuth callback (persistence fix)', () => {
     const { result } = renderHook(() => useGoogleAuth());
     await waitFor(() => expect(result.current.error).toBe('autherror'));
     expect(result.current.connected).toBe(false);
+  });
+
+  it('accepts token when id_token audience matches client ID', async () => {
+    window.history.replaceState({}, '', '/?code=g-code&state=g-state');
+    sessionStorage.setItem('pb_google_state', 'g-state');
+    sessionStorage.setItem('pb_google_verifier', 'g-verifier');
+
+    // VITE_GOOGLE_CLIENT_ID is undefined in test env, so CLIENT_ID is undefined
+    // verifyAudience checks payload.aud === CLIENT_ID; undefined === undefined → true
+    const mockToken = {
+      access_token: 'g-token-valid-aud',
+      expires_in: 3600,
+      id_token: makeFakeIdToken(undefined),
+    };
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockToken,
+    });
+
+    const { result } = renderHook(() => useGoogleAuth());
+    await waitFor(() => expect(result.current.connected).toBe(true));
+    vi.restoreAllMocks();
+  });
+
+  it('rejects token when id_token audience does not match (token substitution)', async () => {
+    window.history.replaceState({}, '', '/?code=g-code&state=g-state');
+    sessionStorage.setItem('pb_google_state', 'g-state');
+    sessionStorage.setItem('pb_google_verifier', 'g-verifier');
+
+    const mockToken = {
+      access_token: 'g-token-wrong-aud',
+      expires_in: 3600,
+      id_token: makeFakeIdToken('evil-client-id'),
+    };
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockToken,
+    });
+
+    const { result } = renderHook(() => useGoogleAuth());
+    await waitFor(() => expect(result.current.error).toBe('autherror'));
+    expect(result.current.connected).toBe(false);
+    vi.restoreAllMocks();
   });
 });
 
