@@ -5,7 +5,7 @@ import { URL_ALLOWLIST } from '../utils/sanitize';
 function isSafeUrl(url) {
   try {
     const parsed = new URL(url);
-    return parsed.protocol === 'https:' && URL_ALLOWLIST.includes(parsed.hostname);
+    return parsed.protocol === 'https:' && parsed.port === '' && URL_ALLOWLIST.includes(parsed.hostname);
   } catch {
     return false;
   }

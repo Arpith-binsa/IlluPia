@@ -17,7 +17,9 @@ export function useBridge({ spotifyToken, googleToken, onRateLimit }) {
     const url = validatePlaylistUrl(rawUrl);
     if (!url) return 'urlerror';
     if (!spotifyToken || !googleToken) return 'needboth';
+    if (status !== 'idle') return null;
 
+    setResults(null);
     setStatus('loading');
     try {
       const playlistId = spotify.extractPlaylistId(url);
@@ -59,7 +61,9 @@ export function useBridge({ spotifyToken, googleToken, onRateLimit }) {
     const url = validatePlaylistUrl(rawUrl);
     if (!url) return 'urlerror';
     if (!spotifyToken || !googleToken) return 'needboth';
+    if (status !== 'idle') return null;
 
+    setResults(null);
     setStatus('loading');
     try {
       const playlistId = youtube.extractPlaylistId(url);

@@ -32,7 +32,7 @@ export function BridgePanel({ title, subtitle, onConvert, status, t }) {
 
       <form onSubmit={handleSubmit} className="flex gap-2">
         <input
-          type="url"
+          type="text"
           value={url}
           onChange={e => setUrl(e.target.value)}
           placeholder={t.paste}
