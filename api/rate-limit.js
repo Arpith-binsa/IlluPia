@@ -1,0 +1,30 @@
+// api/rate-limit.js
+// In-memory sliding window rate limiter for Vercel Edge Functions.
+// Shared state persists within a single edge node's lifetime.
+// For high-traffic production: replace with Vercel KV (Redis).
+
+/** ip → [timestamp, timestamp, ...] */
+const store = new Map();
+
+const WINDOW_MS = 60_000; // 1 minute sliding window
+const MAX_REQUESTS = 10;  // per IP per window
+
+/**
+ * Check and record a request from the given IP.
+ * Returns { allowed: boolean, retryAfter: number (seconds) }.
+ *
+ * OWASP: rate limiting protects against DoS and API abuse.
+ */
+export function checkRateLimit(ip) {
+  const now = Date.now();
+  // Prune timestamps outside the current window
+  const timestamps = (store.get(ip) || []).filter(ts => now - ts < WINDOW_MS);
+
+  if (timestamps.length >= MAX_REQUESTS) {
+    const retryAfter = Math.ceil((WINDOW_MS - (now - timestamps[0])) / 1000);
+    return { allowed: false, retryAfter };
+  }
+
+  store.set(ip, [...timestamps, now]);
+  return { allowed: true, retryAfter: 0 };
+}
