@@ -4,7 +4,7 @@ import { generateVerifier, generateChallenge, generateState } from '../utils/pkc
 
 // OWASP: client ID is safe to expose — PKCE flow requires no secret
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
-const REDIRECT_URI = 'https://illupia.com/';
+const REDIRECT_URI = window.location.origin + '/';
 const SCOPES = 'playlist-read-private playlist-modify-public playlist-modify-private';
 
 // localStorage / sessionStorage keys
