@@ -104,6 +104,7 @@ export function useGoogleAuth() {
 
     if (code && returnedState && returnedState === storedState) {
       const verifier = localStorage.getItem(VERIFIER_KEY);
+      console.log('[GoogleAuth] verifier at retrieval:', verifier?.slice(0, 10));
       localStorage.removeItem(VERIFIER_KEY);
       localStorage.removeItem(STATE_KEY);
       exchangeCode(code, verifier);
@@ -119,6 +120,7 @@ export function useGoogleAuth() {
     const state = generateState();
 
     localStorage.setItem(VERIFIER_KEY, verifier);
+    console.log('[GoogleAuth] verifier saved:', localStorage.getItem(VERIFIER_KEY)?.slice(0, 10));
     localStorage.setItem(STATE_KEY, state);
 
     const params = new URLSearchParams({
