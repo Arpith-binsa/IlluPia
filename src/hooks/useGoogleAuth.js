@@ -41,8 +41,8 @@ export function useGoogleAuth() {
         code_verifier_prefix: verifier ? verifier.slice(0, 10) : 'NULL/UNDEFINED',
         code_verifier_type: typeof verifier,
       });
-      console.log('[GoogleAuth] sessionStorage verifier at exchange time:',
-        sessionStorage.getItem(VERIFIER_KEY) === null ? 'NULL (already removed or never set)' : 'present'
+      console.log('[GoogleAuth] localStorage verifier at exchange time:',
+        localStorage.getItem(VERIFIER_KEY) === null ? 'NULL (already removed or never set)' : 'present'
       );
 
       const res = await fetch('https://oauth2.googleapis.com/token', {
@@ -100,12 +100,12 @@ export function useGoogleAuth() {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
     const returnedState = params.get('state');
-    const storedState = sessionStorage.getItem(STATE_KEY);
+    const storedState = localStorage.getItem(STATE_KEY);
 
     if (code && returnedState && returnedState === storedState) {
-      const verifier = sessionStorage.getItem(VERIFIER_KEY);
-      sessionStorage.removeItem(VERIFIER_KEY);
-      sessionStorage.removeItem(STATE_KEY);
+      const verifier = localStorage.getItem(VERIFIER_KEY);
+      localStorage.removeItem(VERIFIER_KEY);
+      localStorage.removeItem(STATE_KEY);
       exchangeCode(code, verifier);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -118,8 +118,8 @@ export function useGoogleAuth() {
     const challenge = await generateChallenge(verifier);
     const state = generateState();
 
-    sessionStorage.setItem(VERIFIER_KEY, verifier);
-    sessionStorage.setItem(STATE_KEY, state);
+    localStorage.setItem(VERIFIER_KEY, verifier);
+    localStorage.setItem(STATE_KEY, state);
 
     const params = new URLSearchParams({
       response_type: 'code',
