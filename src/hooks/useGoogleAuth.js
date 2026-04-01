@@ -32,6 +32,19 @@ export function useGoogleAuth() {
 
   const exchangeCode = useCallback(async (code, verifier) => {
     try {
+      // DEBUG: log token exchange params (partial values only — remove before prod)
+      console.log('[GoogleAuth] token exchange debug:', {
+        grant_type: 'authorization_code',
+        code_prefix: code ? code.slice(0, 10) : 'NULL/UNDEFINED',
+        redirect_uri: REDIRECT_URI,
+        client_id: CLIENT_ID,
+        code_verifier_prefix: verifier ? verifier.slice(0, 10) : 'NULL/UNDEFINED',
+        code_verifier_type: typeof verifier,
+      });
+      console.log('[GoogleAuth] sessionStorage verifier at exchange time:',
+        sessionStorage.getItem(VERIFIER_KEY) === null ? 'NULL (already removed or never set)' : 'present'
+      );
+
       const res = await fetch('https://oauth2.googleapis.com/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
