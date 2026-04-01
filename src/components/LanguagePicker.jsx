@@ -23,7 +23,7 @@ export function LanguagePicker({ onSelect }) {
           aria-label="Northern Sámi"
         >
           <img src="/sami.jpg" alt="Sámi flag" className="w-12 h-8 object-cover rounded" />
-          <span className="text-sm font-['Outfit']">Sámegillii</span>
+          <span className="text-sm font-['Outfit']">Sámegiella</span>
         </button>
       </div>
     </main>
