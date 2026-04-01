@@ -12,7 +12,7 @@ export function LanguagePicker({ onSelect }) {
           className="flex flex-col items-center gap-2 text-[#f0f0f0] opacity-80 hover:opacity-100 transition-opacity"
           aria-label="English"
         >
-          <span className="text-4xl">🇬🇧</span>
+          <img src="/uk.jpg" alt="UK flag" className="w-12 h-8 object-cover rounded" /> 
           <span className="text-sm font-['Outfit']">English</span>
         </button>
 
