@@ -58,7 +58,8 @@ export function useGoogleAuth() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Token exchange failed');
+      console.log('[GoogleAuth] token error response:', data);
+      if (!res.ok) throw new Error(data.error_description || data.error || 'Token exchange failed');
 
       // OWASP: verify token audience if id_token is present
       if (data.id_token && !verifyAudience(data.id_token)) {
