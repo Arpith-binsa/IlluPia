@@ -1,5 +1,5 @@
 // src/hooks/useGoogleAuth.js
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { generateVerifier, generateChallenge, generateState } from '../utils/pkce';
 
 // OWASP: client ID is safe to expose — PKCE requires no secret
@@ -29,6 +29,7 @@ function verifyAudience(idToken) {
 export function useGoogleAuth() {
   const [token, setToken] = useState(null);
   const [error, setError] = useState(null);
+  const exchanged = useRef(false);
 
   const exchangeCode = useCallback(async (code, verifier) => {
     try {
@@ -103,10 +104,15 @@ export function useGoogleAuth() {
     const storedState = localStorage.getItem(STATE_KEY);
 
     if (code && returnedState && returnedState === storedState) {
+      if (exchanged.current) return;
+      exchanged.current = true;
+
       const verifier = localStorage.getItem(VERIFIER_KEY);
       console.log('[GoogleAuth] verifier at retrieval:', verifier?.slice(0, 10));
       localStorage.removeItem(VERIFIER_KEY);
       localStorage.removeItem(STATE_KEY);
+      // Clear URL params before exchange so a page refresh can't replay the code
+      history.replaceState({}, '', '/');
       exchangeCode(code, verifier);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
