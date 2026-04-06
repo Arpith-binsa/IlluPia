@@ -46,16 +46,12 @@ export function useGoogleAuth() {
         localStorage.getItem(VERIFIER_KEY) === null ? 'NULL (already removed or never set)' : 'present'
       );
 
-      const res = await fetch('https://oauth2.googleapis.com/token', {
+      // OWASP: token exchange goes through our server proxy so GOOGLE_CLIENT_SECRET
+      // is never exposed in the client bundle.
+      const res = await fetch('/api/google-token', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          grant_type: 'authorization_code',
-          code,
-          redirect_uri: REDIRECT_URI,
-          client_id: CLIENT_ID,
-          code_verifier: verifier,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, code_verifier: verifier, redirect_uri: REDIRECT_URI }),
       });
       const data = await res.json();
       console.log('[GoogleAuth] token error response:', data);
