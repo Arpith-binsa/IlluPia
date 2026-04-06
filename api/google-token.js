@@ -26,6 +26,11 @@ export default async function handler(req, res) {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
+  console.log('[google-token] client_id present:', !!clientId);
+  console.log('[google-token] client_secret present:', !!clientSecret);
+  console.log('[google-token] client_secret length:', clientSecret?.length);
+  console.log('[google-token] request body keys:', Object.keys(req.body ?? {}));
+
   if (!clientId || !clientSecret) {
     console.error('[google-token] Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET env vars');
     return res.status(500).json({ error: 'server_error', error_description: 'Server misconfiguration' });
@@ -44,6 +49,9 @@ export default async function handler(req, res) {
     }),
   });
 
-  const data = await upstream.json();
+  console.log('[google-token] google response status:', upstream.status);
+  const responseText = await upstream.text();
+  console.log('[google-token] google response body:', responseText);
+  const data = JSON.parse(responseText);
   return res.status(upstream.status).json(data);
 }
