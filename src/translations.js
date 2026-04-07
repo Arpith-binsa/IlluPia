@@ -1,6 +1,7 @@
 /**
  * UI translations for IlluPia.
  * Two languages: English (en) and Northern Sámi (se).
+ * Keys marked [TODO: Sámi] need to be filled in by the user.
  */
 export const TRANSLATIONS = {
   en: {
@@ -23,6 +24,14 @@ export const TRANSLATIONS = {
     disconnect: 'Disconnect',
     illuSub: 'YouTube → Spotify',
     piaSub: 'Spotify → YouTube',
+    heroHeading: 'Move music between worlds.',
+    heroTagline: 'Convert playlists between Spotify and YouTube — in both directions.',
+    aboutLink: 'About IlluPia',
+    aboutBack: '← IlluPia',
+    aboutIntro: 'IlluPia is named after two of the greatest dogs to ever live.',
+    aboutSubtext: 'Illu is still here, bounding through life. Pia is gone — but every playlist carries something of her.',
+    illuStory: '[Placeholder — Illu\'s story goes here.]',
+    piaStory: '[Placeholder — Pia\'s story goes here.]',
   },
   se: {
     connect: 'Čatnat',
@@ -44,5 +53,14 @@ export const TRANSLATIONS = {
     disconnect: 'Čatnasa eret',
     illuSub: 'YouTube → Spotify',
     piaSub: 'Spotify → YouTube',
+    // [TODO: Sámi] — fill in the translations below
+    heroHeading: 'Move music between worlds.',
+    heroTagline: 'Convert playlists between Spotify and YouTube — in both directions.',
+    aboutLink: 'About IlluPia',
+    aboutBack: '← IlluPia',
+    aboutIntro: 'IlluPia is named after two of the greatest dogs to ever live.',
+    aboutSubtext: 'Illu is still here, bounding through life. Pia is gone — but every playlist carries something of her.',
+    illuStory: '[Placeholder — Illu\'s story goes here.]',
+    piaStory: '[Placeholder — Pia\'s story goes here.]',
   },
 };
