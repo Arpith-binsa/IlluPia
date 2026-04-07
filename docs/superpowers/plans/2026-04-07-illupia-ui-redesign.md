@@ -14,6 +14,7 @@
 
 | File | Action | Responsibility |
 |---|---|---|
+| `index.html` | Modify | Add favicon link, update Outfit font weights to include 900 |
 | `package.json` | Modify | Add `react-router-dom` |
 | `src/main.jsx` | Modify | Wrap `<App />` in `<BrowserRouter>` |
 | `src/index.css` | Modify | White/black body defaults; CSS animation utility classes |
@@ -24,6 +25,48 @@
 | `src/components/ResultsView.jsx` | Modify | B&W restyle, animated buttons |
 | `src/App.jsx` | Modify | Hero + routing + header with lang toggle + About link at bottom |
 | `src/pages/AboutPage.jsx` | Create | About page: intro, Illu story + photo, Pia story + photo |
+
+---
+
+### Task 0: Update index.html — favicon and font weights
+
+**Files:**
+- Modify: `index.html`
+
+- [ ] **Step 1: Replace index.html**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Convert playlists between Spotify and YouTube Music" />
+    <title>IlluPia</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+```
+
+Two changes from the original:
+- Added `<link rel="icon" type="image/x-icon" href="/favicon.ico" />` — Vite serves `/public/favicon.ico` at `/favicon.ico`
+- Added `900` to the Outfit font weight list — required for `font-black` (Tailwind's `font-weight: 900`) used throughout the redesign
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add index.html
+git commit -m "feat: add favicon and Outfit weight 900 to index.html"
+```
 
 ---
 
