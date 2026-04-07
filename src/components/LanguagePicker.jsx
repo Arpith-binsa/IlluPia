@@ -3,27 +3,37 @@
 
 export function LanguagePicker({ onSelect }) {
   return (
-    <main className="min-h-screen bg-[#0d0d0d] flex flex-col items-center justify-center gap-8">
-      <h1 className="text-3xl font-bold text-[#f0f0f0] font-['Outfit']">IlluPia</h1>
-      <div className="flex gap-6">
-        {/* English */}
+    <main className="min-h-screen bg-white flex flex-col items-center justify-center gap-10 px-4">
+      <div className="text-center">
+        <p className="text-[10px] font-bold tracking-[2.5px] uppercase text-[#bbb] mb-3">
+          Choose language / Vállje giela
+        </p>
+        <h1 className="text-6xl font-black tracking-[-3px] text-[#111]">IlluPia</h1>
+      </div>
+
+      <div className="flex gap-4 w-full max-w-xs">
         <button
           onClick={() => onSelect('en')}
-          className="flex flex-col items-center gap-2 text-[#f0f0f0] opacity-80 hover:opacity-100 transition-opacity"
+          className="flex-1 flex flex-col items-center gap-3 p-5 border border-[#ddd] rounded-lg hover:border-[#111] transition-colors bg-white btn-animated btn-lift"
           aria-label="English"
         >
-          <img src="/uk.jpg" alt="UK flag" className="w-12 h-8 object-cover rounded" /> 
-          <span className="text-sm font-['Outfit']">English</span>
+          <img src="/uk.jpg" alt="UK flag" className="w-11 h-8 object-cover rounded" />
+          <div>
+            <div className="text-sm font-bold text-[#111]">English</div>
+            <div className="text-xs text-[#999] mt-0.5">English</div>
+          </div>
         </button>
 
-        {/* Northern Sámi */}
         <button
           onClick={() => onSelect('se')}
-          className="flex flex-col items-center gap-2 text-[#f0f0f0] opacity-80 hover:opacity-100 transition-opacity"
+          className="flex-1 flex flex-col items-center gap-3 p-5 border border-[#ddd] rounded-lg hover:border-[#111] transition-colors bg-white btn-animated btn-lift"
           aria-label="Northern Sámi"
         >
-          <img src="/sami.jpg" alt="Sámi flag" className="w-12 h-8 object-cover rounded" />
-          <span className="text-sm font-['Outfit']">Sámegiella</span>
+          <img src="/sami.jpg" alt="Sámi flag" className="w-11 h-8 object-cover rounded" />
+          <div>
+            <div className="text-sm font-bold text-[#111]">Sámegiella</div>
+            <div className="text-xs text-[#999] mt-0.5">Northern Sámi</div>
+          </div>
         </button>
       </div>
     </main>
