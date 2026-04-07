@@ -1,13 +1,13 @@
 # IlluPia — UI Redesign Spec
 **Date:** 2026-04-07
-**Approach:** Option A — restyle in-place, no new component files
-**Scope:** Visual redesign + language toggle + button animations. Zero logic changes.
+**Approach:** Option A — restyle in-place + one new page component + React Router
+**Scope:** Visual redesign, language toggle, button animations, About page at `/about`. Zero logic changes to auth/conversion.
 
 ---
 
 ## Overview
 
-Redesign IlluPia's UI to a clean black-and-white aesthetic matching a modern design studio. Add a persistent in-header language toggle (EN/SE), an About section with placeholder story copy, and playful CSS button animations. All existing functionality — OAuth flows, PKCE, CSRF checks, rate limiting, conversion logic — remains completely unchanged.
+Redesign IlluPia's UI to a clean black-and-white aesthetic matching a modern design studio. Add a persistent in-header language toggle (EN/SE), playful CSS button animations, and a dedicated About page at `illupia.com/about` — a full-page tribute to the two dogs the app is named after. The main page links to it with an "About IlluPia" button at the bottom. All existing functionality — OAuth flows, PKCE, CSRF checks, rate limiting, conversion logic — remains completely unchanged.
 
 ---
 
@@ -29,135 +29,187 @@ Redesign IlluPia's UI to a clean black-and-white aesthetic matching a modern des
 | Font | `'Outfit'`, system-ui fallback |
 
 No gradients. No brand colors. Black, white, and hairline greys only.
+**Exception:** Error messages stay `text-red-500` — accessibility requires errors to be visually distinct.
 
 ---
 
-## Page Layout
+## Routing
 
-### Header (always visible)
+React Router DOM (`react-router-dom`) is added as a dependency. `src/main.jsx` wraps the app in `<BrowserRouter>`. Two routes:
+
+| Route | Component | Notes |
+|---|---|---|
+| `/` | `App.jsx` | Main converter page (existing) |
+| `/about` | `src/pages/AboutPage.jsx` | New — About IlluPia |
+
+`vercel.json` already has a catch-all SPA rewrite (`/((?!api/).*) → /index.html`) so `/about` works on Vercel without changes.
+
+The `LanguagePicker` full-screen gate (`if (!lang)`) runs before routing — if no language is stored, the picker is shown regardless of which URL the user is on. After selecting a language, they land on whichever route they originally requested.
+
+---
+
+## Page Layout: Main (`/`)
+
+### Header (always visible on both pages)
 ```
 [ IlluPia ]                    [ EN ]  [ Spotify — Connect ]  [ YouTube ✓ ]
 ```
-- Logo: `IlluPia`, 18px, weight 800, left-aligned
-- Language toggle: small bordered pill showing `EN` or `SE`, toggles on click, right side
-- Auth buttons: minimal pills, unobtrusive — show service name + connect/disconnect status
+- Logo: `IlluPia`, 18px, weight 800, left-aligned — is a `<Link to="/">` (React Router)
+- Language toggle: small bordered pill showing `EN` or `SE`, toggles on click
+- Auth buttons: minimal pills — service name + connect/disconnect status
 - Bottom border: 1px `#eeeeee`
 
 ### Hero Section
-- Eyebrow: `PLAYLIST BRIDGE` (small caps, tracked, muted)
-- Heading: large (clamp ~40–52px), weight 900, tight letter-spacing — placeholder: `"Move music between worlds."`
-- Tagline: 14px, muted, max-width ~280px — pulled from `t.heroTagline`
-- Generous vertical padding (48px top, 40px bottom)
+- Eyebrow: `PLAYLIST BRIDGE` (small caps, tracked, muted) — hardcoded, not translated (decorative)
+- Heading: large (`clamp(36px, 8vw, 52px)`), weight 900, tight letter-spacing — `t.heroHeading`
+- Tagline: 14px, muted, max-width ~280px — `t.heroTagline`
+- Padding: 48px top, 40px bottom
 - Bottom border: 1px `#eeeeee`
 
 ### Converter Sections (Illu + Pia)
-Each gets its own full-width section (not a card), separated by a 1px border:
+Each gets its own full-width section separated by a 1px border — not a card:
 ```
-ILLU                           ← small caps label
-YouTube → Spotify              ← large bold title (32px, weight 900)
-Paste a YouTube playlist link  ← muted subtitle (12px)
+ILLU                           ← small caps label (hardcoded — it's a name)
+YouTube → Spotify              ← large bold title (32px, weight 900) — t.illuSub already exists
+Paste a YouTube playlist link  ← t.paste label, muted (12px)
 
-[ URL input field _________________________ ] [ Convert ]
+[ URL input ________________________________ ] [ Convert ]
 ```
 - Section padding: 36px vertical, 24px horizontal
-- Input: full-width minus button, 1px border, focus ring switches border to `#111`
+- Input: 1px `#dddddd` border, focus → `#111`
 - Convert button: black bg, white text, animated (see Animations)
 
-### About Section
-Below the two converter sections:
+### Bottom of Main Page
+After the Pia section, a minimal link to the About page:
 ```
-ABOUT                          ← small caps eyebrow
-
-Illu                           ← 20px bold title
-[placeholder story text]       ← 12px, muted, line-height 1.7
-
-────────────────────           ← hairline divider
-
-Pia
-[placeholder story text]
+────────────────────────────────
+[ About IlluPia → ]            ← text link, subtle, not a CTA button
 ```
-- Padding: 40px top, 36px bottom, 24px horizontal
-- Stories keyed to `t.illuStory` and `t.piaStory` — placeholder English text added now, Sámi to be filled in later
+- Styled as a quiet text link (`t.aboutLink`), right-arrow indicator
+- Uses `<Link to="/about">` (React Router)
+- No border card, no bg — just text at the bottom of the page with generous padding
 
-### LanguagePicker (first visit only)
-Full-screen, white background, same typography as the rest of the app:
-- Eyebrow: `"Choose language / Vállje giela"` (bilingual — so a Sámi-only reader can navigate before selecting)
+---
+
+## Page Layout: About (`/about`)
+
+### Structure
+```
+← IlluPia                     ← back link (top left), links to "/"
+
+IlluPia is named after
+two of the greatest dogs
+to ever live.                  ← large intro heading (t.aboutIntro)
+
+Illu is still here, bounding
+through life. Pia is gone —
+but every playlist carries
+something of her.              ← intro subtext (t.aboutSubtext)
+
+──────────────────────────────
+
+[ photo of Illu ]
+
+Illu                           ← 28px bold
+t.illuStory                    ← story text, 15px, comfortable line-height
+
+──────────────────────────────
+
+[ photo of Pia ]
+
+Pia                            ← 28px bold
+t.piaStory                     ← story text
+
+──────────────────────────────
+
+← IlluPia                     ← back link repeated at bottom
+```
+
+### Photo handling
+- Images placed in `/public/illu.jpg` and `/public/pia.jpg` by the user
+- Rendered as `<img src="/illu.jpg" alt="Illu" />` with `w-full rounded-sm object-cover` Tailwind classes, max-height ~360px
+- If an image hasn't been added yet, the `<img>` tag will simply show a broken image — acceptable during development. No elaborate placeholder needed.
+
+### Layout constraints
+- Max-width: `640px`, centered, generous padding (`24px` horizontal, `64px` vertical)
+- The page shares the same header as the main page (logo + lang toggle)
+- Auth buttons are **not shown** on the About page — they're irrelevant to this context
+- No convert functionality on this page
+
+---
+
+## LanguagePicker (first visit only)
+
+Full-screen, white background, same B&W typography as the rest of the app:
+- Eyebrow: `"Choose language / Vállje giela"` — bilingual so a Sámi-only reader can navigate it
 - Title: `"IlluPia"` large, weight 900
 - Two bordered choice cards side by side: flag image + language name + native name
-- Cards: white bg, 1.5px `#dddddd` border, hover → border goes `#111`
-- On select: stores `pb_lang` in localStorage, renders the main app
+- Cards: white bg, 1.5px `#dddddd` border, hover → `#111`
+- On select: stores `pb_lang` in localStorage, app re-renders into the correct route
 
-After first visit, the full-screen picker is never shown again. Language is changed via the header toggle.
+After first visit, the header toggle handles all language switching.
 
-### ResultsView
-Same B&W treatment:
+---
+
+## ResultsView
+
+Same B&W treatment as the rest of the app:
 - White background, black text
-- "Open playlist" button: black bg, white text (same as Convert)
-- "Convert another" button: white bg, black border, black text
+- "Open playlist" (`<a>` tag): black bg, white text
+- "Convert another" (button): white bg, black border, black text
 - Matched/missed counts in plain text, no color coding
-- **Error messages stay red** (`text-red-500`) — intentional accessibility exception so errors are clearly distinct from normal content. This is the only color in the UI.
+- Error messages stay `text-red-500`
 
 ---
 
 ## Language Toggle (Header)
 
-- Renders as a small bordered button: `EN` or `SE`
-- On click: toggles between the two, writes to `localStorage('pb_lang')`, updates `lang` state in `App.jsx`
-- Lives inside the existing `handleLangSelect` flow — same function the LanguagePicker already calls
-- No separate component needed — inline in the header JSX in `App.jsx`
+- Small bordered pill: `EN` or `SE`, always visible in the header on both pages
+- On click: toggles between the two, writes to `localStorage('pb_lang')`, calls `handleLangSelect`
+- Inline in the header JSX — no separate component
+- The About page shares the same header, so the toggle works there too
 
 ---
 
 ## New Translation Keys
 
-The following keys must be added to both `en` and `se` objects in `src/translations.js`:
+Added to both `en` and `se` in `src/translations.js`. Sámi values use English placeholder text until the user fills them in.
 
-| Key | English value | Sámi |
-|---|---|---|
-| `heroHeading` | `"Move music between worlds."` | *(to be added by user)* |
-| `heroTagline` | `"Convert playlists between Spotify and YouTube — in both directions."` | *(to be added by user)* |
-| `aboutTitle` | `"About"` | *(to be added by user)* |
-| `illuStory` | `"[Placeholder — Illu's story goes here.]"` | *(to be added by user)* |
-| `piaStory` | `"[Placeholder — Pia's story goes here.]"` | *(to be added by user)* |
-
-Sámi placeholder values in code: same English placeholder text until the user fills them in (empty string would render nothing, which is confusing).
+| Key | English value |
+|---|---|
+| `heroHeading` | `"Move music between worlds."` |
+| `heroTagline` | `"Convert playlists between Spotify and YouTube — in both directions."` |
+| `aboutLink` | `"About IlluPia"` |
+| `aboutBack` | `"← IlluPia"` |
+| `aboutIntro` | `"IlluPia is named after two of the greatest dogs to ever live."` |
+| `aboutSubtext` | `"Illu is still here, bounding through life. Pia is gone — but every playlist carries something of her."` |
+| `illuStory` | `"[Placeholder — Illu's story goes here.]"` |
+| `piaStory` | `"[Placeholder — Pia's story goes here.]"` |
 
 ---
 
 ## Button Animations
 
-Implemented as pure CSS in `src/index.css` — no Framer Motion required.
-
-### Utility classes (added to `index.css`)
+Pure CSS in `src/index.css` — no Framer Motion.
 
 ```css
-/* Base interactive button */
+/* Base: bounce scale on hover, pop on click */
 .btn-animated {
   transition: transform 150ms cubic-bezier(0.34, 1.56, 0.64, 1),
               background-color 150ms ease,
               border-color 150ms ease;
 }
-.btn-animated:hover:not(:disabled) {
-  transform: scale(1.04);
-}
-.btn-animated:active:not(:disabled) {
-  transform: scale(0.97);
-}
-.btn-animated:disabled {
-  cursor: not-allowed;
-}
+.btn-animated:hover:not(:disabled) { transform: scale(1.04); }
+.btn-animated:active:not(:disabled) { transform: scale(0.97); }
+.btn-animated:disabled { cursor: not-allowed; }
 
-/* Lift variant — auth pills */
-.btn-lift:hover:not(:disabled) {
-  transform: translateY(-2px) scale(1.02);
-}
+/* Lift: auth pills and choice cards */
+.btn-lift:hover:not(:disabled) { transform: translateY(-2px) scale(1.02); }
 
-/* Convert button — rotate + scale on hover */
-.btn-convert:hover:not(:disabled) {
-  transform: scale(1.04) rotate(1.5deg);
-}
+/* Convert: rotate + scale */
+.btn-convert:hover:not(:disabled) { transform: scale(1.04) rotate(1.5deg); }
 
-/* Entry wobble — plays once on mount */
+/* Entry wobble: fires once on mount (Convert button only) */
 @keyframes wobble-in {
   0%   { transform: rotate(0deg); }
   25%  { transform: rotate(-2deg) scale(1.03); }
@@ -170,13 +222,11 @@ Implemented as pure CSS in `src/index.css` — no Framer Motion required.
 }
 ```
 
-### Applied to components
-
 | Component | Classes |
 |---|---|
 | `BridgePanel` Convert button | `btn-animated btn-convert btn-wobble-in` |
-| `AuthButton` connect/disconnect | `btn-animated btn-lift` |
-| `ResultsView` Open playlist link | `btn-animated` |
+| `AuthButton` | `btn-animated btn-lift` |
+| `ResultsView` Open playlist | `btn-animated` |
 | `ResultsView` Convert another | `btn-animated` |
 | `LanguagePicker` choice cards | `btn-animated btn-lift` |
 
@@ -184,25 +234,28 @@ Implemented as pure CSS in `src/index.css` — no Framer Motion required.
 
 ## Files Changed
 
-| File | Change summary |
+| File | Change |
 |---|---|
-| `src/index.css` | White bg, black text body defaults; add `btn-animated`, `btn-lift`, `btn-convert`, `btn-wobble-in` CSS classes and `@keyframes wobble-in` |
-| `src/translations.js` | Add `heroTagline`, `aboutTitle`, `illuStory`, `piaStory` to `en` and `se` |
-| `src/App.jsx` | Add hero section, about section, inline lang toggle in header; remove dark bg; keep all hook/logic unchanged |
-| `src/components/LanguagePicker.jsx` | White bg, bordered choice cards, bilingual eyebrow, same flag images |
-| `src/components/AuthButton.jsx` | Minimal pill style, `btn-animated btn-lift` |
-| `src/components/BridgePanel.jsx` | Full-section layout, large title, `btn-animated btn-convert btn-wobble-in` on Convert button |
-| `src/components/ResultsView.jsx` | White bg, B&W buttons, `btn-animated` |
+| `package.json` | Add `react-router-dom` |
+| `src/main.jsx` | Wrap app in `<BrowserRouter>` |
+| `src/index.css` | White/black body defaults; animation utility classes |
+| `src/translations.js` | Add 8 new keys to `en` and `se` |
+| `src/App.jsx` | Add hero, converter sections, "About IlluPia" footer link, inline lang toggle; wire up React Router `<Routes>` |
+| `src/components/LanguagePicker.jsx` | Restyle to B&W |
+| `src/components/AuthButton.jsx` | Minimal pill style + `btn-animated btn-lift` |
+| `src/components/BridgePanel.jsx` | Full-section layout + animations |
+| `src/components/ResultsView.jsx` | B&W restyle + `btn-animated` |
+| `src/pages/AboutPage.jsx` | **New file** — About page with intro, dog stories, photos |
 
-**No changes to:** any hook, service, utility, API function, `vercel.json`, `vite.config.js`, or test file.
+**No changes to:** hooks, services, utilities, API functions, `vercel.json`, `vite.config.js`, test files.
 
 ---
 
 ## What is NOT in scope
 
-- Framer Motion (not installed, not needed)
-- New component files
-- Any logic, auth, rate limiting, or conversion changes
-- Responsive / mobile-specific breakpoints beyond Tailwind defaults
+- Framer Motion
+- More than two routes
+- Mobile-specific breakpoints beyond Tailwind defaults
 - Dark mode toggle
-- Real About copy (user will add EN + Sámi text directly to `translations.js`)
+- Real About copy in Sámi (user adds to `translations.js` directly)
+- Lightbox or gallery for photos (plain `<img>` tags)
