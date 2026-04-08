@@ -52,8 +52,8 @@ export const TRANSLATIONS = {
     illuSub: 'YouTube → Spotify',
     piaSub: 'Spotify → YouTube',
     // [TODO: Sámi] — fill in heroHeading, heroTagline, aboutLink, aboutBack
-    heroHeading: 'Move music between worlds.',
-    heroTagline: 'Convert playlists between Spotify and YouTube — in both directions.',
+    heroHeading: 'Sirdit musihka máilmmiid gaskkas.',
+    heroTagline: 'Rievdat čuojahanlisttuid Spotify ja YouTube gaskkas — goappaš guvlui.',
     aboutLink: 'About IlluPia',
     aboutBack: '← IlluPia',
     aboutIntro: 'Illu & Pia',
