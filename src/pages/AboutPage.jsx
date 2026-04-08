@@ -23,36 +23,34 @@ export function AboutPage({ lang, onLangToggle, t }) {
           {t.aboutBack}
         </Link>
 
-        {/* Intro */}
-        <div className="mt-10 mb-16">
-          <h1 className="text-[clamp(28px,6vw,40px)] font-black tracking-[-1.5px] leading-[1.1] text-[#111] mb-5">
-            {t.aboutIntro}
-          </h1>
-          <p className="text-base text-[#555] leading-relaxed max-w-[480px]">
-            {t.aboutSubtext}
-          </p>
-        </div>
+        {/* Heading */}
+        <h1 className="mt-10 mb-8 text-[clamp(32px,7vw,48px)] font-black tracking-[-2px] leading-[1.0] text-[#111]">
+          {t.aboutIntro}
+        </h1>
 
-        {/* Illu */}
-        <div className="border-t border-[#eee] pt-10 mb-14">
-          <img
-            src="/illu.jpg"
-            alt="Illu"
-            className="w-full rounded-sm object-cover max-h-[360px] mb-6"
-          />
-          <h2 className="text-[28px] font-black tracking-[-1px] text-[#111] mb-3">Illu</h2>
-          <p className="text-[15px] text-[#555] leading-[1.75]">{t.illuStory}</p>
-        </div>
+        {/* Story */}
+        <p className="text-[15px] text-[#555] leading-[1.8] mb-14">
+          {t.aboutStory}
+        </p>
 
-        {/* Pia */}
-        <div className="border-t border-[#eee] pt-10">
-          <img
-            src="/pia.jpg"
-            alt="Pia"
-            className="w-full rounded-sm object-cover max-h-[360px] mb-6"
-          />
-          <h2 className="text-[28px] font-black tracking-[-1px] text-[#111] mb-3">Pia</h2>
-          <p className="text-[15px] text-[#555] leading-[1.75]">{t.piaStory}</p>
+        {/* Photos — Pia first, she comes first in the story */}
+        <div className="space-y-10">
+          <div>
+            <img
+              src="/pia.jpg"
+              alt="Pia"
+              className="w-full rounded-sm object-cover max-h-[400px]"
+            />
+            <p className="mt-2 text-xs text-[#999] tracking-[1px] uppercase">Pia</p>
+          </div>
+          <div>
+            <img
+              src="/illu.jpg"
+              alt="Illu"
+              className="w-full rounded-sm object-cover max-h-[400px]"
+            />
+            <p className="mt-2 text-xs text-[#999] tracking-[1px] uppercase">Illu</p>
+          </div>
         </div>
 
         {/* Bottom back link */}

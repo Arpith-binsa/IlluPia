@@ -28,10 +28,8 @@ export const TRANSLATIONS = {
     heroTagline: 'Convert playlists between Spotify and YouTube — in both directions.',
     aboutLink: 'About IlluPia',
     aboutBack: '← IlluPia',
-    aboutIntro: 'IlluPia is named after two of the greatest dogs to ever live.',
-    aboutSubtext: 'Illu is still here, bounding through life. Pia is gone — but every playlist carries something of her.',
-    illuStory: '[Placeholder — Illu\'s story goes here.]',
-    piaStory: '[Placeholder — Pia\'s story goes here.]',
+    aboutIntro: 'Illu & Pia',
+    aboutStory: 'When I was 8 years old, my biggest wish came true – to have a little sister, Pia. Through 13 years of bullying, she was by my side. Sadly, she passed away after a beautiful life, 7 days before she turned 13. I was heartbroken. But then a new joy came into my life – my little Illu, who carries so much of Pia with her. I carry them both with me and light a candle in Pia\'s memory, while Illu fills my days with joy.',
   },
   se: {
     connect: 'Čatnat',
@@ -53,14 +51,12 @@ export const TRANSLATIONS = {
     disconnect: 'Čatnasa eret',
     illuSub: 'YouTube → Spotify',
     piaSub: 'Spotify → YouTube',
-    // [TODO: Sámi] — fill in the translations below
+    // [TODO: Sámi] — fill in heroHeading, heroTagline, aboutLink, aboutBack
     heroHeading: 'Move music between worlds.',
     heroTagline: 'Convert playlists between Spotify and YouTube — in both directions.',
     aboutLink: 'About IlluPia',
     aboutBack: '← IlluPia',
-    aboutIntro: 'IlluPia is named after two of the greatest dogs to ever live.',
-    aboutSubtext: 'Illu is still here, bounding through life. Pia is gone — but every playlist carries something of her.',
-    illuStory: '[Placeholder — Illu\'s story goes here.]',
-    piaStory: '[Placeholder — Pia\'s story goes here.]',
+    aboutIntro: 'Illu & Pia',
+    aboutStory: 'Go ledjen 8-jahkásaš, de ollašuvai mu stuorámus sávvaldat – oažžut unna oappáža, Pia. 13 jagi givssideami bokte son lei mu bealis. Dađibahábut son jámii maŋŋel čábbis eallima, 7 beaivvi ovdal go son deavdii 13 jagi. Mun ledjen hui váibmoláđis. Muhto de bođii ođđa illu mu eallimii – mu unna Illu, gii guodde seamma olu Pia mielde. Mun guoddan sudno goappašiid mielde ja čuovggahan čuovgga Pia muitui, seammás go Illu deavdá mu beivviid illuin ❤️',
   },
 };
